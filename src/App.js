@@ -1,23 +1,42 @@
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  const [eventList, setEventList] = useState([]);
+  const [showList, setShowList] = useState(true);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+
+  function getEvents() {
+    setLoadingEvents(true)
+    axios.get('https://api.neerme.io/events')
+    .then(function (response) {
+      // handle success
+      setEventList(response.data)
+      setLoadingEvents(false)
+      console.log(eventList);
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+      setLoadingEvents(false)
+    })
+  }
+
+  useEffect(() => {
+    getEvents()
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>
+        <ul>
+        {eventList.map((event) => {
+          return <li key={event.event_id}>{event.event_name}</li>;
+        })}
+        </ul>
+      </div>
     </div>
   );
 }
